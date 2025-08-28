@@ -24,6 +24,8 @@ Empathetic Code Reviewer turns blunt code review comments into supportive, educa
 ## Demo (Notebook)
 - Colab/Jupyter demo shows JSON-in → JSON-out → rendered Markdown with display(Markdown(...)).
 
+<img width="1107" height="751" alt="image" src="https://github.com/user-attachments/assets/481de8fe-db8b-4694-9fb5-c76be0f0c6c6" />
+
 ---
 
 ## Quickstart
@@ -38,13 +40,6 @@ git clone https://github.com/your-user/empathetic-code-reviewer.git
 cd empathetic-code-reviewer
 pip install -r requirements.txt
 
-Minimal `requirements.txt`:
-transformers>=4.42
-accelerate>=0.31
-bitsandbytes>=0.43
-fastapi[standard]>=0.115
-uvicorn>=0.30
-
 ### 3) Configure (optional)
 Set environment variables to tailor runtime:
 export MODEL_ID="Qwen/Qwen2.5-3B-Instruct" # or mistralai/Mistral-7B-Instruct-v0.3
@@ -52,6 +47,7 @@ export MAX_NEW_TOKENS=800
 export TEMPERATURE=0.2
 
 ### 4) Run a quick test (Python)
+```
 from empathetic_reviewer import generate_report_json
 
 code_snippet = """def get_active_users(users):
@@ -69,14 +65,15 @@ review_comments = [
 ]
 
 report = generate_report_json(code_snippet, review_comments)
-print(report.keys()) # dict with 'task', 'metadata', 'summary', 'comments', optional 'markdown_report'
+print(report.keys())
 print(len(report["comments"]))
-
+```
 ---
 
 ## Input and Output
 
 ### Input JSON
+```
 {
 "code_snippet": "def get_active_users(users):\n results = []\n for u in users:\n if u.is_active == True and u.profile_complete == True:\n results.append(u)\n return results\n",
 "review_comments": [
@@ -85,8 +82,9 @@ print(len(report["comments"]))
 "Boolean comparison '== True' is redundant."
 ]
 }
-
+```
 ### Output JSON (contract)
+```
 {
 "task": "empathetic_code_review",
 "code_language": "python",
@@ -151,18 +149,19 @@ print(len(report["comments"]))
 ],
 "markdown_report": "### Analysis of Comment: "This is inefficient. Don't loop twice conceptually."\n* Positive Rephrasing: Good job capturing the logic! We can make it more efficient and concise.\n* The 'Why': When filtering items, a comprehension expresses intent more directly and can be faster than appending in a loop.\n* Suggested Improvement:\npython\ndef get_active_users(users):\n return [user for user in users if user.is_active and user.profile_complete]\n``````python\ndef get_active_users(users):\n results = []\n for user in users:\n if user.is_active and user.profile_complete:\n results.append(user)\n return results\n``````python\ndef get_active_users(users):\n return [user for user in users if user.is_active and user.profile_complete]\n
 }
-
+```
 ---
 
 ## Usage
 
 ### CLI
+```
 python cli.py
 --code_snippet_file ./examples/sample.py
 --comments_file ./examples/comments.txt
 --out_json ./out/report.json
 --emit_markdown true
-
+```
 ### Python
 ```
 from empathetic_reviewer import generate_report_json, render_markdown
